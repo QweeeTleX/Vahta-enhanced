@@ -1,0 +1,11 @@
+.page {
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg, #02050f 0%, #06152f 30%, #0a2d63 65%, #0f4fc4 100%);
+}
+

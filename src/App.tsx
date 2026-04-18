@@ -36,6 +36,21 @@ function App() {
   const innerHeight = chartHeight - chartMargin.top - chartMargin.bottom
   const maxValue = max(shiftBreakdown, (item) => item.value) ?? 0
 
+  const monthlyMaxHours = max(monthlyLoadData, (item) => item.totalHours) ?? 0
+
+  const monthlyXScale = scaleBand()
+    .domain(monthlyLoadData.map((item) => item.label))
+    .range([0, innerWidth])
+    .padding(0.2)
+
+  const monthlyYScale = scaleLinear()
+    .domain([0, monthlyMaxHours])
+    .nice()
+    .range([innerHeight, 0])
+
+  const monthlyYTicks = monthlyYScale.ticks(5)
+
+
   const xScale = scaleBand()
     .domain(shiftBreakdown.map((item) => item.label))
     .range([0, innerWidth])
@@ -220,6 +235,48 @@ function App() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="panel chart-panel">
+        <h2>Monthly load chart</h2>
+
+        <svg className="chart" width={chartWidth} height={chartHeight}>
+          <g transform={`translate(${chartMargin.left}, ${chartMargin.top})`}>
+            {monthlyYTicks.map((tick) => {
+              const y = monthlyYScale(tick)
+
+              return (
+                <line
+                  key={tick}
+                  className="chart-grid-line"
+                  x1={0}
+                  y1={y}
+                  x2={innerWidth}
+                  y2={y}
+                />  
+              )
+            })}
+
+            {monthlyLoadData.map((item) => {
+              const x = monthlyXScale(item.label) ?? 0
+              const y = monthlyYScale(item.totalHours)
+              const barHeight = innerHeight - y
+
+              return (
+                <rect
+                  key={item.label}
+                  className="chart-bar"
+                  x={x}
+                  y={y}
+                  width={monthlyXScale.bandwidth()}
+                  height={barHeight}
+                  fill="#6bd3ff"
+                />
+              )
+            })}
+
+          </g>
+        </svg>
       </section>
 
     </main>

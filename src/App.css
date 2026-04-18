@@ -2,9 +2,10 @@
   color: white;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
+  padding: 32px 0 56px;
   background:
     linear-gradient(180deg, #02050f 0%, #06152f 30%, #0a2d63 65%, #0f4fc4 100%);
 }
@@ -90,3 +91,22 @@
   text-anchor: middle;
 }
 
+.chart-axis {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1;
+}
+
+.chart-grid-line {
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.chart-tick-label {
+  fill: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+}
+
+.monthly-data-panel {
+  margin-bottom: 24px;
+}

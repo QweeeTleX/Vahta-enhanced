@@ -28,6 +28,12 @@ export type ShiftBreakdownItem = {
 	color: string
 }
 
+export type MonthlyLoadItem = {
+  label: string
+  totalHours: number
+  workDays: number
+}
+
 export function dateKey(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -141,4 +147,32 @@ export function buildShiftBreakdown(entries: ScheduleEntry[]): ShiftBreakdownIte
 		{ label: 'Recovery', value: recoveryCount, color: '#7f8aa3'},
 		{ label: 'Off', value: offCount, color: '#575f70' },
 	]
+}
+
+export function buildMonthlyLoadData(
+  baseDate: Date,
+  team: TeamId,
+  monthsCount: number,
+): MonthlyLoadItem[] {
+  const items: MonthlyLoadItem[] = []
+
+  for (let offset = monthsCount - 1; offset >= 0; offset -= 1) {
+    const current = new Date(baseDate.getFullYear(), baseDate.getMonth() - offset, 1)
+
+    const entries = buildMonthSchedule(
+      current.getFullYear(),
+      current.getMonth(),
+      team,
+    )
+
+    const summary = summarizeMonth(entries)
+
+    items.push({
+      label: current.toLocaleDateString('en-US', { month: 'short' }),
+      totalHours: summary.totalHours,
+      workDays: summary.workDays,
+    })
+  }
+
+  return items
 }

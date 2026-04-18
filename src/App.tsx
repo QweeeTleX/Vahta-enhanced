@@ -2,7 +2,12 @@ import { max, scaleBand, scaleLinear } from 'd3'
 import { useState } from 'react'
 import './App.css'
 import { teams, type TeamId } from './data/vahta'
-import { buildMonthSchedule, summarizeMonth, buildShiftBreakdown } from './lib/schedule'
+import {
+  buildMonthSchedule,
+  summarizeMonth,
+  buildShiftBreakdown,
+  buildMonthlyLoadData,
+} from './lib/schedule'
 
 const chartWidth = 520
 const chartHeight = 320
@@ -25,6 +30,8 @@ function App() {
   const monthEntries = buildMonthSchedule(year, month, selectedTeam)
   const summary = summarizeMonth(monthEntries)
   const shiftBreakdown = buildShiftBreakdown(monthEntries)
+  const monthlyLoadData = buildMonthlyLoadData(currentDate, selectedTeam, 4)
+
   const innerWidth = chartWidth - chartMargin.left - chartMargin.right
   const innerHeight = chartHeight - chartMargin.top - chartMargin.bottom
   const maxValue = max(shiftBreakdown, (item) => item.value) ?? 0
@@ -38,6 +45,8 @@ function App() {
     .domain([0, maxValue])
     .nice()
     .range([innerHeight, 0])  
+
+  const yTicks = yScale.ticks(5)  
 
   const upcomingEntries = monthEntries.filter((entry) => entry.meta.hours > 0).slice(0, 6)
 
@@ -107,10 +116,44 @@ function App() {
 
         <svg className="chart" width={chartWidth} height={chartHeight}>
           <g transform={`translate(${chartMargin.left}, ${chartMargin.top})`}>
+            {yTicks.map((tick) => {
+              const y = yScale(tick)
+
+              return (
+                <line
+                  key={tick}
+                  className="chart-grid-line"
+                  x1={0}
+                  y1={y}
+                  x2={innerWidth}
+                  y2={y}
+                />  
+              )
+            })}
+
+            {yTicks.map((tick) => {
+              const y = yScale(tick)
+
+              return (
+                <text
+                  key={`${tick}-label`}
+                  className="chart-tick-label"
+                  x={-12}
+                  y={y}
+                  dy="0.32em"
+                  textAnchor="end"
+                >
+                  {tick}
+                </text>  
+              )
+            })}
+
             {shiftBreakdown.map((item) => {
               const x = xScale(item.label) ?? 0
               const y = yScale(item.value)
               const barHeight = innerHeight - y
+
+              
 
               return (
                 <rect
@@ -156,9 +199,29 @@ function App() {
                   </text>
               )
             })}
+
+            <line
+              className="chart-axis"
+              x1={0}
+              y1={innerHeight}
+              x2={innerWidth}
+              y2={innerHeight}
+            />
           </g>
         </svg>
       </section>
+
+      <section className="panel monthly-data-panel">
+        <h2>Monthly load data</h2>
+        <ul className="data-list">
+          {monthlyLoadData.map((item) => (
+            <li key={item.label}>
+              {item.label}: {item.totalHours}h / {item.workDays} work days
+            </li>
+          ))}
+        </ul>
+      </section>
+
     </main>
   )
 

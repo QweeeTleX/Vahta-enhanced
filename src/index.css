@@ -1,9 +1,16 @@
 :root {
-  font-family: 'Segoe UI', sans-serif;
+  --bg-deep: #020814;
+  --text: #f4f7fb;
+  --muted: #a7bdd7;
+  --line: rgba(255, 255, 255, 0.1);
+  --accent: #63dbff;
+  --accent-strong: #7ee7ff;
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.28);
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #111827;
-  background: #ffffff;
+  color: var(--text);
+  background: var(--bg-deep);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -22,6 +29,10 @@ body,
 
 body {
   margin: 0;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(99, 219, 255, 0.22), transparent 24%),
+    radial-gradient(circle at 82% 0%, rgba(245, 228, 138, 0.12), transparent 18%),
+    linear-gradient(180deg, #02050f 0%, #06152f 30%, #0a2d63 65%, #0f4fc4 100%);
 }
 
 button,

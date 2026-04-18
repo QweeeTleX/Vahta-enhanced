@@ -30,10 +30,12 @@ body,
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 14% 12%, rgba(99, 219, 255, 0.22), transparent 24%),
-    radial-gradient(circle at 82% 0%, rgba(245, 228, 138, 0.12), transparent 18%),
-    linear-gradient(180deg, #02050f 0%, #06152f 30%, #0a2d63 65%, #0f4fc4 100%);
+    radial-gradient(circle at 14% 12%, rgba(99, 219, 255, 0.16), transparent 22%),
+    radial-gradient(circle at 82% 0%, rgba(245, 228, 138, 0.08), transparent 16%),
+    #07182d;
+  background-attachment: fixed;
 }
+
 
 button,
 input,

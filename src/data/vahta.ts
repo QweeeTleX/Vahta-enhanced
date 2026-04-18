@@ -14,10 +14,10 @@ export type ShiftMeta = {
 }
 
 export const teams = [
-  { id: 1 as const, label: 'Team 1' },
-  { id: 2 as const, label: 'Team 2' },
-  { id: 3 as const, label: 'Team 3' },
-  { id: 4 as const, label: 'Team 4' },
+  { id: 1 as const, label: 'Бригада 1' },
+  { id: 2 as const, label: 'Бригада 2' },
+  { id: 3 as const, label: 'Бригада 3' },
+  { id: 4 as const, label: 'Бригада 4' },
 ]
 
 export const cycleStart = new Date(2025, 10, 26)
@@ -31,43 +31,43 @@ export const cycles: Record<TeamId, ShiftCode[]> = {
 
 export const shiftMeta: Record<ShiftCode, ShiftMeta> = {
   D1: {
-    label: 'Day shift 1',
+    label: 'Дневная смена 1',
     shortLabel: 'D1',
     hours: 12,
     category: 'day',
     color: '#f5e48a',
   },
   D2: {
-    label: 'Day shift 2',
+    label: 'Дневная смена 2',
     shortLabel: 'D2',
     hours: 12,
     category: 'day',
     color: '#ffe57b',
   },
   N1: {
-    label: 'Night shift 1',
+    label: 'Ночная смена 1',
     shortLabel: 'N1',
     hours: 12,
     category: 'night',
     color: '#9fd7ff',
   },
   N2: {
-    label: 'Night shift 2',
+    label: 'Ночная смена 2',
     shortLabel: 'N2',
     hours: 12,
     category: 'night',
     color: '#84c6ff',
   },
   RECOVERY: {
-    label: 'Recovery day',
-    shortLabel: 'REC',
+    label: 'Отсыпной',
+    shortLabel: 'Отс.',
     hours: 0,
     category: 'recovery',
     color: '#7f8aa3',
   },
   OFF: {
-    label: 'Off day',
-    shortLabel: 'OFF',
+    label: 'Выходной',
+    shortLabel: 'Вых.',
     hours: 0,
     category: 'off',
     color: '#575f70',

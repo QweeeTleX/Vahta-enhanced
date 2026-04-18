@@ -118,35 +118,35 @@ export function summarizeMonth(entries: ScheduleEntry[]): MonthSummary {
 }
 
 export function buildShiftBreakdown(entries: ScheduleEntry[]): ShiftBreakdownItem[] {
-	let dayCount = 0
-	let nightCount = 0
-	let recoveryCount = 0
-	let offCount = 0
+  let dayCount = 0
+  let nightCount = 0
+  let recoveryCount = 0
+  let offCount = 0
 
-	for (const entry of entries) {
-		if (entry.meta.category === 'day') {
-			dayCount += 1
-		}
+  for (const entry of entries) {
+    if (entry.meta.category === 'day') {
+      dayCount += 1
+    }
 
-		if (entry.meta.category === 'night') {
-			nightCount += 1
-		}
+    if (entry.meta.category === 'night') {
+      nightCount += 1
+    }
 
-		if (entry.meta.category === 'recovery') {
-			recoveryCount += 1
-		}
+    if (entry.meta.category === 'recovery') {
+      recoveryCount += 1
+    }
 
-		if (entry.meta.category === 'off') {
-			offCount += 1
-		}
-	}
+    if (entry.meta.category === 'off') {
+      offCount += 1
+    }
+  }
 
-	return [
-		{ label: 'Day', value: dayCount, color: '#f5e48a'},
-		{ label: 'Night', value: nightCount, color: '#9fd7ff'},
-		{ label: 'Recovery', value: recoveryCount, color: '#7f8aa3'},
-		{ label: 'Off', value: offCount, color: '#575f70' },
-	]
+  return [
+    { label: 'День', value: dayCount, color: '#f5e48a' },
+    { label: 'Ночь', value: nightCount, color: '#9fd7ff' },
+    { label: 'Отсыпной', value: recoveryCount, color: '#7f8aa3' },
+    { label: 'Выходной', value: offCount, color: '#575f70' },
+  ]
 }
 
 export function buildMonthlyLoadData(
@@ -168,7 +168,7 @@ export function buildMonthlyLoadData(
     const summary = summarizeMonth(entries)
 
     items.push({
-      label: current.toLocaleDateString('en-US', { month: 'short' }),
+      label: current.toLocaleDateString('ru-RU', { month: 'short' }),
       totalHours: summary.totalHours,
       workDays: summary.workDays,
     })

@@ -1,6 +1,6 @@
 import { max, scaleBand, scaleLinear } from 'd3'
 import { useState } from 'react'
-import './App.css'
+import './styles/App.css'
 import { teams, type TeamId } from './data/vahta'
 import {
   buildMonthSchedule,
@@ -8,6 +8,8 @@ import {
   buildShiftBreakdown,
   buildMonthlyLoadData,
 } from './lib/schedule'
+import MonthScheduleTable from './components/MonthSchedule'
+
 
 const chartWidth = 520
 const chartHeight = 320
@@ -28,7 +30,7 @@ function App() {
   const month = currentDate.getMonth()
 
   const selectedTeamLabel =
-    teams.find((team) => team.id === selectedTeam)?.label ?? `Team ${selectedTeam}`
+    teams.find((team) => team.id === selectedTeam)?.label ?? `Бригада ${selectedTeam}`
 
   const monthEntries = buildMonthSchedule(year, month, selectedTeam)
   const summary = summarizeMonth(monthEntries)
@@ -63,46 +65,52 @@ function App() {
 
   const startOfToday = new Date(year, month, currentDate.getDate())
 
-  const upcomingEntries = monthEntries
-  .filter((entry) => entry.meta.hours > 0 && entry.date >= startOfToday)
-  .slice(0, 6)
+  const nextMonthDate = new Date(year, month + 1, 1)
+  const nextMonthEntries = buildMonthSchedule(
+    nextMonthDate.getFullYear(),
+    nextMonthDate.getMonth(),
+    selectedTeam,
+  )
 
+  const upcomingEntries = [...monthEntries, ...nextMonthEntries]
+    .filter((entry) => entry.meta.hours > 0 && entry.date >= startOfToday)
+    .slice(0, 6)
 
-  const monthLabel = currentDate.toLocaleString('en-US', {
+  const monthLabel = currentDate.toLocaleString('ru-RU', {
     month: 'long',
     year: 'numeric',
   })
 
   const summaryItems = [
     {
-      label: 'Work days',
+      label: 'Рабочие дни',
       value: summary.workDays,
-      note: 'Scheduled shifts in the current month',
+      note: 'Запланированные смены в текущем месяце',
     },
     {
-      label: 'Total hours',
+      label: 'Всего часов',
       value: summary.totalHours,
-      note: 'Based on the 12-hour rotation model',
+      note: 'По модели ротации с 12-часовыми сменами',
     },
     {
-      label: 'Day shifts',
+      label: 'Дневные смены',
       value: summary.dayShiftCount,
-      note: 'D1 and D2 slots combined',
+      note: 'Сумма смен D1 и D2',
     },
     {
-      label: 'Night shifts',
+      label: 'Ночные смены',
       value: summary.nightShiftCount,
-      note: 'N1 and N2 slots combined',
+      note: 'Сумма смен N1 и N2',
     },
     {
-      label: 'Recovery days',
+      label: 'Отсыпные',
       value: summary.recoveryDays,
-      note: 'Recovery buffer after night rotation',
+      note: 'Буфер после ночного цикла',
     },
     {
-      label: 'Off days',
+      label: 'Выходные',
       value: summary.offDays,
-      note: 'Fully free calendar days',
+      note: 'Полностью свободные дни календаря',
     },
   ]
 
@@ -111,37 +119,37 @@ function App() {
       <section className="panel hero-panel">
         <div className="hero-copy">
           <p className="eyebrow">VAHTA Analytics</p>
-          <h1 className="page-title">Shift load dashboard for brigade rotations</h1>
+          <h1 className="page-title">Дашборд сменной нагрузки для бригадного графика</h1>
           <p className="hero-text">
-            Built on the original VAHTA rotation logic, this version turns the schedule into a
-            scan-friendly dashboard for monthly load, shift composition and near-term planning.
+            Построено на исходной логике ротации VAHTA: график превращается в удобный дашборд
+            для оценки месячной нагрузки, состава смен и ближайшего планирования.
           </p>
         </div>
 
         <aside className="hero-meta">
           <div className="meta-block">
-            <span className="meta-label">Active month</span>
+            <span className="meta-label">Текущий месяц</span>
             <strong className="meta-value">{monthLabel}</strong>
           </div>
 
           <div className="meta-grid">
             <div className="meta-item">
-              <span className="meta-label">Selected team</span>
+              <span className="meta-label">Выбранная бригада</span>
               <strong className="meta-strong">{selectedTeamLabel}</strong>
             </div>
 
             <div className="meta-item">
-              <span className="meta-label">Monthly hours</span>
+              <span className="meta-label">Часов за месяц</span>
               <strong className="meta-strong">{summary.totalHours}</strong>
             </div>
 
             <div className="meta-item">
-              <span className="meta-label">Work days</span>
+              <span className="meta-label">Рабочие дни</span>
               <strong className="meta-strong">{summary.workDays}</strong>
             </div>
 
             <div className="meta-item">
-              <span className="meta-label">Rotation mix</span>
+              <span className="meta-label">Баланс ротации</span>
               <strong className="meta-strong">
                 {summary.dayShiftCount}/{summary.nightShiftCount}
               </strong>
@@ -153,11 +161,11 @@ function App() {
       <section className="panel controls-panel">
         <div className="panel-heading">
           <div className="panel-heading-copy">
-            <p className="eyebrow">Controls</p>
-            <h2 className="panel-title">Choose a brigade</h2>
+            <p className="eyebrow">Управление</p>
+            <h2 className="panel-title">Выбери бригаду</h2>
             <p className="panel-text">
-              All cards and charts below recalculate from the same schedule model, so you can
-              compare load patterns without scanning the entire calendar.
+              Все карточки и графики ниже пересчитываются из одной модели расписания, поэтому
+              можно сравнивать нагрузку без просмотра всего календаря.
             </p>
           </div>
         </div>
@@ -176,6 +184,12 @@ function App() {
         </div>
       </section>
 
+      <MonthScheduleTable
+        entries={monthEntries}
+        teamLabel={selectedTeamLabel}
+        monthLabel={monthLabel}
+      />
+
       <section className="summary-strip">
         {summaryItems.map((item) => (
           <article key={item.label} className="summary-card">
@@ -190,10 +204,10 @@ function App() {
         <section className="panel shifts-panel">
           <div className="panel-heading">
             <div className="panel-heading-copy">
-              <p className="eyebrow">Near term</p>
-              <h2 className="panel-title">Upcoming shifts</h2>
+              <p className="eyebrow">Ближайший период</p>
+              <h2 className="panel-title">Ближайшие смены</h2>
               <p className="panel-text">
-                Quick read on the next scheduled slots from the active monthly rotation.
+                Быстрый просмотр ближайших запланированных смен из текущей ротации.
               </p>
             </div>
 
@@ -202,7 +216,7 @@ function App() {
 
           <ul className="shift-feed">
             {upcomingEntries.map((entry) => {
-              const dateLabel = entry.date.toLocaleDateString('en-GB', {
+              const dateLabel = entry.date.toLocaleDateString('ru-RU', {
                 day: '2-digit',
                 month: 'short',
               })
@@ -213,7 +227,7 @@ function App() {
 
                   <div className="shift-copy">
                     <strong>{entry.meta.label}</strong>
-                    <span className="shift-meta">Scheduled rotation slot for {selectedTeamLabel}</span>
+                    <span className="shift-meta">Запланированный слот ротации для {selectedTeamLabel}</span>
                   </div>
 
                   <span className="shift-pill" style={{ backgroundColor: entry.meta.color }}>
@@ -229,10 +243,10 @@ function App() {
           <section className="panel chart-panel">
             <div className="panel-heading">
               <div className="panel-heading-copy">
-                <p className="eyebrow">Current month</p>
-                <h2 className="panel-title">Shift breakdown</h2>
+                <p className="eyebrow">Текущий месяц</p>
+                <h2 className="panel-title">Состав смен</h2>
                 <p className="panel-text">
-                  Distribution of day, night, recovery and off days for the active month.
+                  Распределение дневных, ночных, отсыпных и выходных дней в активном месяце.
                 </p>
               </div>
             </div>
@@ -242,7 +256,7 @@ function App() {
                 className="chart"
                 viewBox={`0 0 ${chartWidth} ${chartHeight}`}
                 role="img"
-                aria-label="Shift breakdown chart"
+                aria-label="График состава смен"
               >
                 <g transform={`translate(${chartMargin.left}, ${chartMargin.top})`}>
                   {yTicks.map((tick) => {
@@ -344,10 +358,10 @@ function App() {
           <section className="panel chart-panel">
             <div className="panel-heading">
               <div className="panel-heading-copy">
-                <p className="eyebrow">Trend</p>
-                <h2 className="panel-title">Monthly load chart</h2>
+                <p className="eyebrow">Тренд</p>
+                <h2 className="panel-title">График месячной нагрузки</h2>
                 <p className="panel-text">
-                  Total scheduled hours across the last four months for the selected brigade.
+                  Общее количество запланированных часов за последние четыре месяца для выбранной бригады.
                 </p>
               </div>
             </div>
@@ -357,7 +371,7 @@ function App() {
                 className="chart"
                 viewBox={`0 0 ${chartWidth} ${chartHeight}`}
                 role="img"
-                aria-label="Monthly load chart"
+                aria-label="График месячной нагрузки"
               >
                 <g transform={`translate(${chartMargin.left}, ${chartMargin.top})`}>
                   {monthlyYTicks.map((tick) => {

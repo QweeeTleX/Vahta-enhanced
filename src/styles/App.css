@@ -46,13 +46,13 @@
 .panel-title {
   margin: 0;
   font-family: 'Segoe UI Variable Display', 'Bahnschrift', sans-serif;
-  line-height: 0.96;
+  line-height: 0.86;
   letter-spacing: -0.045em;
 }
 
 .page-title {
-  font-size: clamp(2.8rem, 5vw, 4.9rem);
-  max-width: 11ch;
+  font-size: clamp(2.2rem, 4.2vw, 4rem);
+  max-width: 25ch;
 }
 
 .panel-title {

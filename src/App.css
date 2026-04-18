@@ -9,3 +9,84 @@
     linear-gradient(180deg, #02050f 0%, #06152f 30%, #0a2d63 65%, #0f4fc4 100%);
 }
 
+.page-title {
+  margin: 0;
+}
+
+.month-label {
+  margin: 8px 0 0;
+  opacity: 0.85;
+}
+
+.team-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.team-button {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  cursor: pointer;
+}
+
+.team-button.active {
+  background: rgba(107, 211, 255, 0.9);
+  color: #051125;
+  border-color: transparent;
+  font-weight: 700;
+}
+
+.panel {
+  width: min(720px, calc(100% - 32px));
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.data-list {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.chart-panel {
+  display: grid;
+  justify-items: center;
+}
+
+.chart {
+  overflow: visible;
+}
+
+.chart-bar {
+  transition: opacity 160ms ease;
+}
+
+.chart-bar:hover {
+  opacity: 0.85;
+}
+
+.chart-label {
+  fill: white;
+  font-size: 12px;
+  text-anchor: middle;
+}
+
+.chart-value {
+  fill: white;
+  font-size: 12px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+

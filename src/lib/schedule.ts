@@ -4,13 +4,16 @@ import {
   shiftMeta,
   type ShiftCode,
   type TeamId,
+  type WorkShiftCode,
 } from '../data/vahta'
 
 export type ScheduleEntry = {
   key: string
   date: Date
   code: ShiftCode
+  baseCode: ShiftCode
   meta: (typeof shiftMeta)[ShiftCode]
+  isOverride: boolean
 }
 
 export type MonthSummary = {
@@ -40,6 +43,10 @@ export type WeekendDayShiftTrendPoint = {
   isWeekendDayShift: boolean
 }
 
+export type ShiftOverrideMap = Record<string, WorkShiftCode>
+
+export type TeamShiftOverrides = Record<TeamId, ShiftOverrideMap>
+
 export function dateKey(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -68,19 +75,25 @@ export function buildMonthSchedule(
   year: number,
   month: number,
   team: TeamId,
+  overrides: ShiftOverrideMap = {},
 ): ScheduleEntry[] {
   const lastDay = new Date(year, month + 1, 0).getDate()
   const entries: ScheduleEntry[] = []
 
   for (let day = 1; day <= lastDay; day += 1) {
     const date = new Date(year, month, day)
-    const code = getShift(date, team)
+    const key = dateKey(date)
+    const baseCode = getShift(date, team)
+    const overrideCode = overrides[key]
+    const code = overrideCode ?? baseCode
 
     entries.push({
       key: dateKey(date),
       date,
       code,
+      baseCode,
       meta: shiftMeta[code],
+      isOverride: Boolean(overrideCode)
     })
   }
 
@@ -159,6 +172,7 @@ export function buildMonthlyLoadData(
   baseDate: Date,
   team: TeamId,
   monthsCount: number,
+  overrides: ShiftOverrideMap = {},
 ): MonthlyLoadItem[] {
   const items: MonthlyLoadItem[] = []
 
@@ -169,6 +183,7 @@ export function buildMonthlyLoadData(
       current.getFullYear(),
       current.getMonth(),
       team,
+      overrides,
     )
 
     const summary = summarizeMonth(entries)

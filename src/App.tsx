@@ -9,6 +9,7 @@ import {
   buildMonthlyLoadData,
   buildWeekendDayShiftTrend,
   type WeekendDayShiftTrendPoint,
+  type TeamShiftOverrides,
 } from './lib/schedule'
 import MonthScheduleTable from './components/MonthSchedule'
 
@@ -26,18 +27,29 @@ const chartMargin = {
 function App() {
   const [selectedTeam, setSelectedTeam] = useState<TeamId>(2)
 
+  /*стейт для подработок*/
+  
+  const [teamOverrides, setTeamOverrides] = useState<TeamShiftOverrides>({
+    1: {},
+    2: {},
+    3: {},
+    4: {},
+  })
+
   const currentDate = new Date()
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
 
+  const selectedTeamOverrides = teamOverrides[selectedTeam]
+
   const selectedTeamLabel =
     teams.find((team) => team.id === selectedTeam)?.label ?? `Бригада ${selectedTeam}`
 
-  const monthEntries = buildMonthSchedule(year, month, selectedTeam)
+  const monthEntries = buildMonthSchedule(year, month, selectedTeam, selectedTeamOverrides)
   const summary = summarizeMonth(monthEntries)
   const shiftBreakdown = buildShiftBreakdown(monthEntries)
-  const monthlyLoadData = buildMonthlyLoadData(currentDate, selectedTeam, 4)
+  const monthlyLoadData = buildMonthlyLoadData(currentDate, selectedTeam, 4, selectedTeamOverrides)
 
   const weekendDayShiftTrend = buildWeekendDayShiftTrend(monthEntries)
 
@@ -101,6 +113,7 @@ function App() {
     nextMonthDate.getFullYear(),
     nextMonthDate.getMonth(),
     selectedTeam,
+    selectedTeamOverrides,
   )
 
   const upcomingEntries = [...monthEntries, ...nextMonthEntries]

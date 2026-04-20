@@ -317,6 +317,22 @@
   font-size: 12px;
 }
 
+.chart-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-point {
+  fill: #07182d;
+  stroke: var(--accent-strong);
+  stroke-width: 2;
+}
+
+
+
 @media (max-width: 980px) {
   .hero-panel,
   .workspace {

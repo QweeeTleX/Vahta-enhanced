@@ -1,4 +1,4 @@
-import { max, scaleBand, scaleLinear } from 'd3'
+import { curveStepAfter, index, line, max, scaleBand, scaleLinear } from 'd3'
 import { useState } from 'react'
 import './styles/App.css'
 import { teams, type TeamId } from './data/vahta'
@@ -7,6 +7,8 @@ import {
   summarizeMonth,
   buildShiftBreakdown,
   buildMonthlyLoadData,
+  buildWeekendDayShiftTrend,
+  type WeekendDayShiftTrendPoint,
 } from './lib/schedule'
 import MonthScheduleTable from './components/MonthSchedule'
 
@@ -37,6 +39,8 @@ function App() {
   const shiftBreakdown = buildShiftBreakdown(monthEntries)
   const monthlyLoadData = buildMonthlyLoadData(currentDate, selectedTeam, 4)
 
+  const weekendDayShiftTrend = buildWeekendDayShiftTrend(monthEntries)
+
   const innerWidth = chartWidth - chartMargin.left - chartMargin.right
   const innerHeight = chartHeight - chartMargin.top - chartMargin.bottom
   const maxValue = max(shiftBreakdown, (item) => item.value) ?? 0
@@ -62,6 +66,33 @@ function App() {
 
   const yScale = scaleLinear().domain([0, maxValue]).nice().range([innerHeight, 0])
   const yTicks = yScale.ticks(5)
+
+  const weelendTrendmax = max(weekendDayShiftTrend, (point) => point.total) ?? 0
+
+  const weekendTrendXScale = scaleLinear()
+    .domain([1, monthEntries.length])
+    .range([8, innerWidth - 8])
+    
+  const weekendTrendYScale = scaleLinear()
+    .domain([0, Math.max(weelendTrendmax, 1)])
+    .nice()
+    .range([innerHeight, 0])
+
+  const weekendTrendYTicks = Array.from(
+    { length: Math.max(weelendTrendmax, 1) + 1},
+    (_, index) => index,
+  )
+
+  const weekendTrendXTicks = weekendDayShiftTrend
+    .filter((point) => point.day === 1 || point.day % 5 === 0 || point.day === monthEntries.length)
+    .map((point) => point.day)
+
+  const weekendTrendLine = line<WeekendDayShiftTrendPoint>()
+    .x((point) => weekendTrendXScale(point.day))
+    .y((point) => weekendTrendYScale(point.total))
+    .curve(curveStepAfter)
+
+  const weekendTrendPath = weekendTrendLine(weekendDayShiftTrend)
 
   const startOfToday = new Date(year, month, currentDate.getDate())
 
@@ -467,6 +498,102 @@ function App() {
                   />
                 </g>
               </svg>
+            </div>
+          </section>
+
+          <section className="panel chart-panel">
+            <div className="panel-heading">
+              <div className="panel-heading-copy">
+                <p className="eyebrow">Выходные 5/2</p>
+                <h2 className="panel-title">Дневные смены на субботу и воскресенье</h2>
+                <p className="panel-text">
+                  Этот график показывает, в какие дни месяца дневные смены выбранной бригады попадали в привычные выходные.
+                </p>
+              </div>
+            </div>
+
+            <div className="chart-surface">
+              <svg
+                className="chart"
+                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                role="img"
+                aria-label="График дневных смен в выходные"
+              >
+                <g transform={`translate(${chartMargin.left}, ${chartMargin.top})`}>
+                  {weekendTrendYTicks.map((tick) => {
+                    const y = weekendTrendYScale(tick)
+
+                    return (
+                      <line
+                        key={`${tick}-weekend-grid`}
+                        className="chart-grid-line"
+                        x1={0}
+                        y1={y}
+                        x2={innerWidth}
+                        y2={y}
+                      />  
+                    )
+                  })}
+
+                  {weekendTrendYTicks.map((tick) => {
+                    const y = weekendTrendYScale(tick)
+
+                    return (
+                      <text
+                        key={`${tick}-weekend-y-label`}
+                        className="chart-tick-label"
+                        x={-12}
+                        y={y}
+                        dy="0.32em"
+                        textAnchor="end"
+                      >
+                        {tick}
+                      </text>  
+                    )
+                  })}
+
+                  {weekendTrendXTicks.map((tick) => {
+                    const x = weekendTrendXScale(tick)
+
+                    return (
+                      <text
+                        key={`${tick}-weekend-x-label`}
+                        className="chart-label"
+                        x={x}
+                        y={innerHeight + 24}
+                        textAnchor="middle"
+                      >
+                        {tick}
+                      </text>  
+                    )
+                  })}
+
+                  <path
+                    className="chart-line"
+                    d={weekendTrendPath ?? ''}
+                  />
+
+                  {weekendDayShiftTrend
+                    .filter((point) => point.isWeekendDayShift)
+                    .map((point) => (
+                      <circle
+                        key={`${point.day}-weekend-point`}
+                        className="chart-point"
+                        cx={weekendTrendXScale(point.day)}
+                        cy={weekendTrendYScale(point.total)}
+                        r={5}
+                      /> 
+                    ))}
+
+                  <line
+                    className="chart-axis"
+                    x1={0}
+                    y1={innerHeight}
+                    x2={innerWidth}
+                    y2={innerHeight}
+                  />   
+                </g>  
+              </svg>  
             </div>
           </section>
         </div>

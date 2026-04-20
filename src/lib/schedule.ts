@@ -34,6 +34,12 @@ export type MonthlyLoadItem = {
   workDays: number
 }
 
+export type WeekendDayShiftTrendPoint = {
+  day: number
+  total: number
+  isWeekendDayShift: boolean
+}
+
 export function dateKey(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -175,4 +181,26 @@ export function buildMonthlyLoadData(
   }
 
   return items
+}
+
+export function buildWeekendDayShiftTrend(
+  entries: ScheduleEntry[],
+): WeekendDayShiftTrendPoint[] {
+  let total = 0
+
+  return entries.map((entry) => {
+    const dayOfWeek = entry.date.getDay()
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+    const isWeekendDayShift = isWeekend && entry.meta.category === 'day'
+
+    if (isWeekendDayShift) {
+      total += 1
+    }
+
+    return {
+      day: entry.date.getDate(),
+      total,
+      isWeekendDayShift,
+    }
+  })
 }

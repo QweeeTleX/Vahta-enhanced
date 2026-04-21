@@ -1,73 +1,187 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 📊 VAHTA Analytics
 
-Currently, two official plugins are available:
+Современный дашборд для анализа сменного графика 4 бригад с визуализацией нагрузки, календарём смен и ручной корректировкой расписания.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🧩 О проекте
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Этот pet-project вырос из идеи обычного графика ротации и был превращён в более удобный аналитический интерфейс.
 
-## Expanding the ESLint configuration
+Приложение позволяет:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- переключаться между 4 бригадами
+- смотреть календарь смен на текущий месяц
+- анализировать рабочую нагрузку через графики
+- видеть ближайшие смены без просмотра всего календаря
+- вручную заменять смены прямо в календаре
+- автоматически пересчитывать все показатели после изменений
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Проект сделан как интерактивный frontend-дашборд, где вся логика строится динамически на основе модели расписания, а не на захардкоженных данных.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🖼️ Скриншоты
+
+![Главный экран](preview/vahta-enhanced_main.png)
+
+![Скриншот 1](preview/vahta-enhanced_1.png)
+
+![Скриншот 2](preview/vahta-enhanced_2.png)
+
+
+---
+
+## 🚀 Возможности
+
+- просмотр расписания выбранной бригады на текущий месяц
+- календарная сетка смен с цветовым разделением типов дней
+- карточки с основными метриками месяца
+- график состава смен
+- график месячной нагрузки
+- отдельный line chart для дневных смен, попавших на выходные
+- блок ближайших смен
+- ручная замена смен прямо в календаре
+- автоматический пересчёт статистики и графиков после override-изменений
+- адаптивный интерфейс под десктоп и мобильные экраны
+
+---
+
+## 📈 Что показывает интерфейс
+
+Дашборд помогает быстро понять:
+
+- сколько рабочих дней у выбранной бригады в месяце
+- сколько всего часов запланировано
+- сколько дневных и ночных смен выпадает на месяц
+- сколько отсыпных и выходных
+- как распределяется нагрузка по типам смен
+- как меняется нагрузка по месяцам
+- в какие дни дневные смены попадают на привычные выходные 5/2
+
+---
+
+## 🛠️ Технологии
+
+- **React 19**
+- **TypeScript**
+- **Vite**
+- **D3.js**
+- **CSS**
+
+---
+
+## 🎯 Роль D3 в проекте
+
+D3 используется не как полноценный renderer всего интерфейса, а как слой вычисления графики.
+
+Через D3 в проекте реализованы:
+
+- `scaleBand()` для столбчатых графиков
+- `scaleLinear()` для расчёта координат
+- `max()` для нахождения верхних границ значений
+- `line()` для генерации SVG-линии
+- `curveStepAfter()` для ступенчатого line chart
+
+Сами SVG-элементы рендерятся через React, а D3 отвечает за математику визуализации.
+
+---
+
+## ⚙️ Запуск проекта
+
+### 1. Установка зависимостей
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Запуск в dev-режиме
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+### 3. Production build
+
+```bash
+npm run build
+```
+
+### 4. Локальный preview build-версии
+
+```bash
+npm run preview
+```
+
+---
+
+## 📁 Структура проекта
+
+```bash
+d3/
+├── src/
+│   ├── components/
+│   │   └── MonthSchedule.tsx
+│   ├── data/
+│   │   └── vahta.ts
+│   ├── lib/
+│   │   └── schedule.ts
+│   ├── styles/
+│   │   ├── App.css
+│   │   ├── index.css
+│   │   └── MonthScheduleTable.css
+│   ├── App.tsx
+│   └── main.tsx
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
+```
+
+---
+
+## 🧠 Что интересно в реализации
+
+### Модель расписания
+
+Базовый график строится из ротационного цикла для каждой бригады.  
+На его основе генерируется месяц, summary, breakdown, monthly load и календарные карточки.
+
+### Override-логика
+
+В проект добавлена ручная замена смен через override-модель.  
+Это позволяет менять конкретный день на любой тип смены, не ломая базовую логику ротации.
+
+### Автоматический пересчёт
+
+После изменения смены пересчитываются:
+
+- календарь
+- summary-метрики
+- breakdown график
+- monthly load chart
+- weekend trend line chart
+- ближайшие смены
+
+### Разделение ответственности
+
+- `vahta.ts` хранит доменные данные и метаданные смен
+- `schedule.ts` отвечает за расчёты и генерацию расписания
+- `MonthSchedule.tsx` отвечает за отображение календаря
+- `App.tsx` собирает весь дашборд и графики в единый интерфейс
+
+---
+
+## 📌 Идея проекта
+
+Цель проекта была не просто показать таблицу смен, а собрать более сильный pet-project, который демонстрирует:
+
+- работу с React и TypeScript
+- использование D3 в реальном интерфейсе
+- построение UI вокруг доменной логики
+- работу с derived state
+- проектирование структуры данных
+- адаптивную визуализацию расписания
+

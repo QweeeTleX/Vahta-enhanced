@@ -4,7 +4,6 @@ import {
   shiftMeta,
   type ShiftCode,
   type TeamId,
-  type WorkShiftCode,
 } from '../data/vahta'
 
 export type ScheduleEntry = {
@@ -26,9 +25,9 @@ export type MonthSummary = {
 }
 
 export type ShiftBreakdownItem = {
-	label: string
-	value: number
-	color: string
+  label: string
+  value: number
+  color: string
 }
 
 export type MonthlyLoadItem = {
@@ -43,7 +42,7 @@ export type WeekendDayShiftTrendPoint = {
   isWeekendDayShift: boolean
 }
 
-export type ShiftOverrideMap = Record<string, WorkShiftCode>
+export type ShiftOverrideMap = Record<string, ShiftCode>
 
 export type TeamShiftOverrides = Record<TeamId, ShiftOverrideMap>
 
@@ -88,12 +87,12 @@ export function buildMonthSchedule(
     const code = overrideCode ?? baseCode
 
     entries.push({
-      key: dateKey(date),
+      key,
       date,
       code,
       baseCode,
       meta: shiftMeta[code],
-      isOverride: Boolean(overrideCode)
+      isOverride: Boolean(overrideCode),
     })
   }
 

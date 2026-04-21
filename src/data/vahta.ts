@@ -29,6 +29,15 @@ export const cycles: Record<TeamId, ShiftCode[]> = {
   4: ['OFF', 'OFF', 'N1', 'N2', 'RECOVERY', 'OFF', 'D1', 'D2'],
 }
 
+export const overrideShiftCodes: ShiftCode[] = [
+  'D1',
+  'D2',
+  'N1',
+  'N2',
+  'RECOVERY',
+  'OFF',
+]
+
 export const shiftMeta: Record<ShiftCode, ShiftMeta> = {
   D1: {
     label: 'Дневная смена 1',

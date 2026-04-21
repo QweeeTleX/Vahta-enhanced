@@ -1,7 +1,7 @@
-import { curveStepAfter, index, line, max, scaleBand, scaleLinear } from 'd3'
+import { curveStepAfter, line, max, scaleBand, scaleLinear } from 'd3'
 import { useState } from 'react'
 import './styles/App.css'
-import { teams, type TeamId } from './data/vahta'
+import { teams, type TeamId, type ShiftCode } from './data/vahta'
 import {
   buildMonthSchedule,
   summarizeMonth,
@@ -12,7 +12,6 @@ import {
   type TeamShiftOverrides,
 } from './lib/schedule'
 import MonthScheduleTable from './components/MonthSchedule'
-
 
 const chartWidth = 520
 const chartHeight = 320
@@ -27,8 +26,6 @@ const chartMargin = {
 function App() {
   const [selectedTeam, setSelectedTeam] = useState<TeamId>(2)
 
-  /*стейт для подработок*/
-  
   const [teamOverrides, setTeamOverrides] = useState<TeamShiftOverrides>({
     1: {},
     2: {},
@@ -49,7 +46,12 @@ function App() {
   const monthEntries = buildMonthSchedule(year, month, selectedTeam, selectedTeamOverrides)
   const summary = summarizeMonth(monthEntries)
   const shiftBreakdown = buildShiftBreakdown(monthEntries)
-  const monthlyLoadData = buildMonthlyLoadData(currentDate, selectedTeam, 4, selectedTeamOverrides)
+  const monthlyLoadData = buildMonthlyLoadData(
+    currentDate,
+    selectedTeam,
+    4,
+    selectedTeamOverrides,
+  )
 
   const weekendDayShiftTrend = buildWeekendDayShiftTrend(monthEntries)
 
@@ -79,19 +81,19 @@ function App() {
   const yScale = scaleLinear().domain([0, maxValue]).nice().range([innerHeight, 0])
   const yTicks = yScale.ticks(5)
 
-  const weelendTrendmax = max(weekendDayShiftTrend, (point) => point.total) ?? 0
+  const weekendTrendMax = max(weekendDayShiftTrend, (point) => point.total) ?? 0
 
   const weekendTrendXScale = scaleLinear()
     .domain([1, monthEntries.length])
     .range([8, innerWidth - 8])
-    
+
   const weekendTrendYScale = scaleLinear()
-    .domain([0, Math.max(weelendTrendmax, 1)])
+    .domain([0, Math.max(weekendTrendMax, 1)])
     .nice()
     .range([innerHeight, 0])
 
   const weekendTrendYTicks = Array.from(
-    { length: Math.max(weelendTrendmax, 1) + 1},
+    { length: Math.max(weekendTrendMax, 1) + 1 },
     (_, index) => index,
   )
 
@@ -157,6 +159,29 @@ function App() {
       note: 'Полностью свободные дни календаря',
     },
   ]
+
+  function setOverrideForSelectedTeam(entryKey: string, code: ShiftCode) {
+    setTeamOverrides((prev) => ({
+      ...prev,
+      [selectedTeam]: {
+        ...prev[selectedTeam],
+        [entryKey]: code,
+      },
+    }))
+  }
+
+  function clearOverrideForSelectedTeam(entryKey: string) {
+    setTeamOverrides((prev) => {
+      const nextSelectedTeamOverrides = { ...prev[selectedTeam] }
+
+      delete nextSelectedTeamOverrides[entryKey]
+
+      return {
+        ...prev,
+        [selectedTeam]: nextSelectedTeamOverrides,
+      }
+    })
+  }
 
   return (
     <main className="page">
@@ -232,6 +257,8 @@ function App() {
         entries={monthEntries}
         teamLabel={selectedTeamLabel}
         monthLabel={monthLabel}
+        onSetOverride={setOverrideForSelectedTeam}
+        onClearOverride={clearOverrideForSelectedTeam}
       />
 
       <section className="summary-strip">
@@ -271,7 +298,9 @@ function App() {
 
                   <div className="shift-copy">
                     <strong>{entry.meta.label}</strong>
-                    <span className="shift-meta">Запланированный слот ротации для {selectedTeamLabel}</span>
+                    <span className="shift-meta">
+                      Запланированный слот ротации для {selectedTeamLabel}
+                    </span>
                   </div>
 
                   <span className="shift-pill" style={{ backgroundColor: entry.meta.color }}>
@@ -405,7 +434,8 @@ function App() {
                 <p className="eyebrow">Тренд</p>
                 <h2 className="panel-title">График месячной нагрузки</h2>
                 <p className="panel-text">
-                  Общее количество запланированных часов за последние четыре месяца для выбранной бригады.
+                  Общее количество запланированных часов за последние четыре месяца для выбранной
+                  бригады.
                 </p>
               </div>
             </div>
@@ -520,7 +550,8 @@ function App() {
                 <p className="eyebrow">Выходные 5/2</p>
                 <h2 className="panel-title">Дневные смены на субботу и воскресенье</h2>
                 <p className="panel-text">
-                  Этот график показывает, в какие дни месяца дневные смены выбранной бригады попадали в привычные выходные.
+                  Этот график показывает, в какие дни месяца дневные смены выбранной бригады
+                  попадали в привычные выходные.
                 </p>
               </div>
             </div>
@@ -544,7 +575,7 @@ function App() {
                         y1={y}
                         x2={innerWidth}
                         y2={y}
-                      />  
+                      />
                     )
                   })}
 
@@ -561,7 +592,7 @@ function App() {
                         textAnchor="end"
                       >
                         {tick}
-                      </text>  
+                      </text>
                     )
                   })}
 
@@ -577,14 +608,11 @@ function App() {
                         textAnchor="middle"
                       >
                         {tick}
-                      </text>  
+                      </text>
                     )
                   })}
 
-                  <path
-                    className="chart-line"
-                    d={weekendTrendPath ?? ''}
-                  />
+                  <path className="chart-line" d={weekendTrendPath ?? ''} />
 
                   {weekendDayShiftTrend
                     .filter((point) => point.isWeekendDayShift)
@@ -595,7 +623,7 @@ function App() {
                         cx={weekendTrendXScale(point.day)}
                         cy={weekendTrendYScale(point.total)}
                         r={5}
-                      /> 
+                      />
                     ))}
 
                   <line
@@ -604,9 +632,9 @@ function App() {
                     y1={innerHeight}
                     x2={innerWidth}
                     y2={innerHeight}
-                  />   
-                </g>  
-              </svg>  
+                  />
+                </g>
+              </svg>
             </div>
           </section>
         </div>

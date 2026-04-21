@@ -32,6 +32,7 @@
   align-content: start;
   gap: 10px;
 	overflow: hidden;
+  grid-template-rows: auto 1fr auto;
 }
 
 .calendar-day-day {
@@ -65,7 +66,58 @@
   align-content: start;
 }
 
+.calendar-override-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
 
+.calendar-override-button,
+.calendar-override-clear {
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 0.62rem;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    backgroundColor 160ms ease,
+    color 160ms ease;
+}
+
+.calendar-override-button:hover,
+.calendar-override-clear:hover {
+  border-color: rgba(99, 219, 255, 0.35);
+  background: rgba(99, 219, 255, 0.08);
+  color: var(--text);
+}
+
+.calendar-override-button.active {
+  border-color: rgba(99, 219, 255, 0.45);
+  background: rgba(99, 219, 255, 0.16);
+  color: var(--accent-strong);
+}
+
+.calendar-override-button-text {
+  display: inline;
+}
+
+
+.calendar-override-clear {
+  grid-column: 1 / -1;
+  color: #ffb8b8;
+}
+
+.calendar-override-clear:hover {
+  border-color: rgba(255, 140, 140, 0.35);
+  background: rgba(255, 140, 140, 0.08);
+  color: #ffd0d0;
+}
 
 .calendar-weekday {
   padding: 8px 10px;
@@ -108,6 +160,10 @@
   display: none;
 }
 
+
+
+
+
 @media (max-width: 1180px) {
   .calendar-grid {
     gap: 6px;
@@ -134,6 +190,18 @@
   .calendar-shift-hours {
     display: none;
   }
+
+    .calendar-override-actions {
+    gap: 3px;
+  }
+
+  .calendar-override-button,
+  .calendar-override-clear {
+    padding: 3px 5px;
+    font-size: 0.58rem;
+    border-radius: 8px;
+  }
+
 }
 
 
@@ -163,14 +231,14 @@
 
   .calendar-day {
     aspect-ratio: auto;
-    min-height: 58px;
-    padding: 6px 4px;
+    min-height: 52px;
+    padding: 4px 3px;
     border-radius: 12px;
-    gap: 4px;
+    gap: 3px;
   }
 
   .calendar-date-number {
-    font-size: 0.68rem;
+    font-size: 0.6rem;
     line-height: 1;
   }
 
@@ -184,7 +252,7 @@
 
   .calendar-shift-short {
     display: block;
-    font-size: 0.58rem;
+    font-size: 0.5rem;
     line-height: 1;
     font-weight: 700;
     color: var(--text);
@@ -193,5 +261,31 @@
   .calendar-shift-hours {
     display: none;
   }
+
+  .calendar-override-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  .calendar-override-button,
+  .calendar-override-clear {
+    padding: 2px 3px;
+    border-radius: 7px;
+    font-size: 0.46rem;
+    line-height: 0.9;
+  }
+
+  .calendar-override-button-text {
+    display: none;
+  }
+
+  .calendar-override-button::before {
+    content: attr(data-mobile-label);
+  }
+
+  .calendar-override-clear {
+    font-size: 0.5rem;
+  }
+
 }
 

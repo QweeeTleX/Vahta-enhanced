@@ -24,7 +24,12 @@
 
 ## 🖼️ Скриншоты
 
-<!-- Сюда потом можно добавить скриншоты интерфейса -->
+![Главный экран](preview/vahta-enhanced_main.png)
+
+![Скриншот 1](preview/vahta-enhanced_1.png)
+
+![Скриншот 2](preview/vahta-enhanced_2.png)
+
 
 ---
 

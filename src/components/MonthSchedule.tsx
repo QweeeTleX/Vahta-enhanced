@@ -6,6 +6,10 @@ type MonthScheduleTableProps = {
   entries: ScheduleEntry[]
   teamLabel: string
   monthLabel: string
+  canGoPrev: boolean
+  canGoNext: boolean
+  onPrevMonth: () => void
+  onNextMonth: () => void
   onSetOverride: (entryKey: string, code: ShiftCode) => void
   onClearOverride: (entryKey: string) => void
 }
@@ -14,6 +18,10 @@ function MonthScheduleTable({
   entries,
   teamLabel,
   monthLabel,
+  canGoPrev,
+  canGoNext,
+  onPrevMonth,
+  onNextMonth,
   onSetOverride,
   onClearOverride,
 }: MonthScheduleTableProps) {
@@ -29,13 +37,35 @@ function MonthScheduleTable({
 
   return (
     <section className="panel month-table-panel">
-      <div className="panel-heading">
+      <div className="panel-heading month-table-heading">
         <div className="panel-heading-copy">
           <p className="eyebrow">Календарь</p>
           <h2 className="panel-title">Таблица смен на месяц</h2>
           <p className="panel-text">
             Полное расписание для {teamLabel} на {monthLabel}.
           </p>
+        </div>
+
+        <div className="month-table-nav" aria-label="Навигация по месяцам">
+          <button
+            type="button"
+            className="month-table-nav-button"
+            onClick={onPrevMonth}
+            disabled={!canGoPrev}
+            aria-label="Показать текущий месяц"
+          >
+            ←  
+          </button>
+
+          <button
+            type="button"
+            className="month-table-nav-button"
+            onClick={onNextMonth}
+            disabled={!canGoNext}
+            aria-label="Показать следующий месяц"
+          >
+            →  
+          </button>  
         </div>
       </div>
 
@@ -60,7 +90,6 @@ function MonthScheduleTable({
               const isToday = entry.date.toDateString() === todayKey
 
               const activeCode = entry.code
-              const baseCode = entry.baseCode
               const isOverrideDay = entry.isOverride
 
               const overrideOptions = overrideShiftCodes.map((code) => ({

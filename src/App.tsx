@@ -26,6 +26,8 @@ const chartMargin = {
 function App() {
   const [selectedTeam, setSelectedTeam] = useState<TeamId>(2)
 
+  const [visibleMonthOffset, setVisibleMonthOffset] = useState<0 | 1>(0)
+
   const [teamOverrides, setTeamOverrides] = useState<TeamShiftOverrides>({
     1: {},
     2: {},
@@ -35,8 +37,14 @@ function App() {
 
   const currentDate = new Date()
 
-  const year = currentDate.getFullYear()
-  const month = currentDate.getMonth()
+  const visibleDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + visibleMonthOffset,
+    1,
+  )
+
+  const year = visibleDate.getFullYear()
+  const month = visibleDate.getMonth()
 
   const selectedTeamOverrides = teamOverrides[selectedTeam]
 
@@ -47,7 +55,7 @@ function App() {
   const summary = summarizeMonth(monthEntries)
   const shiftBreakdown = buildShiftBreakdown(monthEntries)
   const monthlyLoadData = buildMonthlyLoadData(
-    currentDate,
+    visibleDate,
     selectedTeam,
     4,
     selectedTeamOverrides,
@@ -122,7 +130,7 @@ function App() {
     .filter((entry) => entry.meta.hours > 0 && entry.date >= startOfToday)
     .slice(0, 6)
 
-  const monthLabel = currentDate.toLocaleString('ru-RU', {
+  const monthLabel = visibleDate.toLocaleString('ru-RU', {
     month: 'long',
     year: 'numeric',
   })
@@ -181,6 +189,14 @@ function App() {
         [selectedTeam]: nextSelectedTeamOverrides,
       }
     })
+  }
+
+  function showCurrentMonth() {
+    setVisibleMonthOffset(0)
+  }
+
+  function showNextMonth() {
+    setVisibleMonthOffset(1)
   }
 
   return (
@@ -257,6 +273,10 @@ function App() {
         entries={monthEntries}
         teamLabel={selectedTeamLabel}
         monthLabel={monthLabel}
+        canGoPrev={visibleMonthOffset === 1}
+        canGoNext={visibleMonthOffset === 0}
+        onPrevMonth={showCurrentMonth}
+        onNextMonth={showNextMonth}
         onSetOverride={setOverrideForSelectedTeam}
         onClearOverride={clearOverrideForSelectedTeam}
       />

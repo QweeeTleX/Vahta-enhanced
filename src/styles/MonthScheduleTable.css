@@ -184,6 +184,7 @@
   line-height: 1.2;
   font-weight: 700;
   color: var(--text);
+  white-space: nowrap;
 }
 
 .calendar-shift-code {
